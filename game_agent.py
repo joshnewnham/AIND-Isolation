@@ -34,8 +34,16 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    return float(own_moves - opp_moves)
 
 
 def custom_score_2(game, player):
@@ -212,8 +220,34 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        legal_moves = game.get_legal_moves()
+
+        if not legal_moves:
+            return (-1, -1)
+
+        score, move = self.find_min_max(game, depth)
+        return move
+
+    def find_min_max(self, game_state, depth):        
+        """ 
+        """        
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        legal_moves = game_state.get_legal_moves()
+
+        # terminal node? 
+        if not legal_moves:
+            return (self.score(game_state, self), (-1, -1))
+
+        min_max_func = max if game_state.active_player == self else min     
+
+        if depth == 0:
+            return min_max_func([(self.score(game_state, self), m) for m in legal_moves])
+
+        return min_max_func(
+            [(self.find_min_max(game_state.forecast_move(m), depth-1)[0], m) for m in legal_moves]
+            )
 
 
 class AlphaBetaPlayer(IsolationPlayer):
