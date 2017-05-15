@@ -225,29 +225,42 @@ class MinimaxPlayer(IsolationPlayer):
         if not legal_moves:
             return (-1, -1)
 
-        score, move = self.find_min_max(game, depth)
+        score, move = self.minmax_search(game, depth)
         return move
 
-    def find_min_max(self, game_state, depth):        
-        """ 
-        """        
+    def minmax_search(self, game_state, depth):
+        """ min and max algorithm 
+        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        legal_moves = game_state.get_legal_moves()
+        best_score  = None
+        best_move  = None
 
-        # terminal node? 
-        if not legal_moves:
-            return (self.score(game_state, self), (-1, -1))
+        best_moves = []
 
-        min_max_func = max if game_state.active_player == self else min     
+        legal_moves = game_state.get_legal_moves()        
 
-        if depth == 0:
-            return min_max_func([(self.score(game_state, self), m) for m in legal_moves])
+        is_max = game_state.active_player == self
 
-        return min_max_func(
-            [(self.find_min_max(game_state.forecast_move(m), depth-1)[0], m) for m in legal_moves]
-            )
+        for m in legal_moves:
+            new_game_state = game_state.forecast_move(m)            
+
+            if depth == 0 or (new_game_state.is_winner(new_game_state.active_player) or new_game_state.is_winner(new_game_state.inactive_player)):
+                score = self.score(new_game_state, self)
+            else:
+                score, move = self.minmax_search(new_game_state, depth-1)
+
+            if best_score is None or ((is_max and score > best_score) or (not is_max and score < best_score)):
+                best_score = score 
+                best_move = m 
+
+                best_moves = [m]
+
+            elif best_score is not None and best_score == score:
+                best_moves.append(m)
+
+        return best_score, random.choice(best_moves)
 
 
 class AlphaBetaPlayer(IsolationPlayer):
@@ -288,8 +301,16 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+            
+        legal_moves = game.get_legal_moves()
+
+        if not legal_moves:
+            return (-1, -1)
+
+        score, move = self.alphabeta(game, self.search_depth)
+        return move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -339,5 +360,39 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        best_score  = None
+        best_move  = None
+
+        best_moves = []
+
+        legal_moves = game.get_legal_moves()        
+
+        is_max = game.active_player == self
+
+        for m in legal_moves:
+            next_game_state = game.forecast_move(m)            
+
+            if depth == 0 or (next_game_state.is_winner(next_game_state.active_player) or next_game_state.is_winner(next_game_state.inactive_player)):
+                score = self.score(next_game_state, self)
+            else:
+                score, move = self.alphabeta(next_game_state, depth-1, alpha, beta)
+
+            if best_score is None or ((is_max and score > best_score) or (not is_max and score < best_score)):
+                best_score = score 
+                best_move = m 
+
+                best_moves = [m]
+
+                if is_max:
+                    if best_score >= beta:
+                        return best_score, random.choice(best_moves)
+                    alpha = max(alpha, best_score)
+                else:
+                    if best_score <= alpha:
+                        return best_score, random.choice(best_moves)
+                    beta = min(beta, best_score)
+
+            elif best_score is not None and best_score == score:
+                best_moves.append(m)            
+
+        return best_score, random.choice(best_moves)
