@@ -80,18 +80,22 @@ def custom_score_2(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    own_moves = len(game.get_legal_moves(player))
-    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    own_moves = game.get_legal_moves(player)
+    opp_moves = game.get_legal_moves(game.get_opponent(player))
 
     # https://math.stackexchange.com/questions/139600/how-to-calculate-the-euclidean-and-manhattan-distance
     opp_current_pos = game.get_player_location(game.get_opponent(player))    
 
     max_distance = game.width + game.height 
 
-    score = float(own_moves - opp_moves) 
+    score = float(len(own_moves) - len(opp_moves)) 
+    attack_score = 0.0 
 
-    for m in own_moves:
-        score += 1.0 * (1-((m[0] - opp_current_pos[0] + m[1] - opp_current_pos[1])/max_distance))
+    for own_move in own_moves:
+        #score += 10.0 * (1-((own_move[0] - opp_current_pos[0] + own_move[1] - opp_current_pos[1])/max_distance))
+        attack_score += 1.0 if own_move in opp_moves else 0.0
+
+    score += attack_score * 2.0 
 
     return float(score)
 
@@ -118,8 +122,26 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = game.get_legal_moves(player)
+    opp_moves = game.get_legal_moves(game.get_opponent(player))
+
+    if len(own_moves) != 0 and len(opp_moves) == 0:
+        return float("inf")
+    elif len(own_moves) == 0 and len(opp_moves) != 0:
+        return float("-inf")
+    elif len(own_moves) == 0 and len(opp_moves) == 0:
+        return -10 
+
+    if len(own_moves) >= len(opp_moves):
+        return (len(own_moves) / len(opp_moves)) ** 2.0 
+    else:
+        return -(len(opp_moves) / len(own_moves)) ** 2.0
 
 
 class IsolationPlayer:
@@ -366,7 +388,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         if not legal_moves:
             return (-1, -1)
 
-        best_move = None 
+        best_move = (-1, -1) 
         best_score = float('-inf')
 
         for current_depth in range(1, self.search_depth):
@@ -375,7 +397,7 @@ class AlphaBetaPlayer(IsolationPlayer):
                 if score > best_score:
                     best_score = score 
                     best_move = move 
-            except: 
+            except SearchTimeout: 
                 return best_move
         
         return best_move
@@ -429,7 +451,7 @@ class AlphaBetaPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         best_score  = None
-        best_move  = None
+        best_move  = (-1,-1)
 
         best_moves = []
 
@@ -443,7 +465,7 @@ class AlphaBetaPlayer(IsolationPlayer):
             if depth == 0 or self.is_game_won(next_game_state):
                 score = self.score(next_game_state, self)
             else:
-                score, move = self.alphabeta(next_game_state, depth-1, alpha, beta)
+                score, _ = self.alphabeta(next_game_state, depth-1, alpha, beta)
 
             if best_score is None or ((is_max and score > best_score) or (not is_max and score < best_score)):
                 best_score = score 

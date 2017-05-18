@@ -19,34 +19,39 @@ class IsolationTest(unittest.TestCase):
     def setUp(self):
         reload(game_agent)
     
-    # def test_single_min_max(self):
-    #     width, height = 7, 7
-    #     #timeout = float("-inf")
-    #     timeout = 10.
+    def test_single_min_max(self):
+        width, height = 7, 7
+        #timeout = float("-inf")
+        timeout = 10.
 
-    #     self.player1 = game_agent.MinimaxPlayer(
-    #         search_depth=3, 
-    #         score_fn=game_agent.custom_score, 
-    #         timeout=timeout)
-    #     self.player2 = sample_players.GreedyPlayer(sample_players.improved_score)
-    #     self.game = isolation.Board(self.player1, self.player2, width=width, height=height)
+        self.player1 = game_agent.MinimaxPlayer(
+            search_depth=3, 
+            score_fn=game_agent.custom_score, 
+            timeout=timeout)
+        
+        self.player2 = game_agent.AlphaBetaPlayer(
+                search_depth=20, 
+                score_fn=game_agent.custom_score_3, 
+                timeout=timeout)
 
-    #     self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
-    #     self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
-    #     print(self.game.to_string())
+        self.game = isolation.Board(self.player1, self.player2, width=width, height=height)
 
-    #     # players take turns moving on the board, so player1 should be next to move
-    #     assert(self.player1 == self.game.active_player)
+        self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
+        self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
+        print(self.game.to_string())
 
-    #     # get a list of the legal moves available to the active player
-    #     print(self.game.get_legal_moves())
+        # players take turns moving on the board, so player1 should be next to move
+        assert(self.player1 == self.game.active_player)
 
-    #     # play the remainder of the game automatically -- outcome can be "illegal
-    #     # move", "timeout", or "forfeit"
-    #     winner, history, outcome = self.game.play()
-    #     print("\nWinner: {}\nOutcome: {}".format("player 1" if winner == self.player1 else "player 2", outcome))
-    #     print("\nstate:\n{}".format(self.game.to_string()))
-    #     print("\nhistory:\n{}".format(history))
+        # get a list of the legal moves available to the active player
+        print(self.game.get_legal_moves())
+
+        # play the remainder of the game automatically -- outcome can be "illegal
+        # move", "timeout", or "forfeit"
+        winner, history, outcome = self.game.play()
+        print("\nWinner: {}\nOutcome: {}".format("player 1" if winner == self.player1 else "player 2", outcome))
+        print("\nstate:\n{}".format(self.game.to_string()))
+        print("\nhistory:\n{}".format(history))
 
     def test_single_alpha_pruning(self):
         width, height = 7, 7
@@ -67,7 +72,7 @@ class IsolationTest(unittest.TestCase):
             
             self.player2 = game_agent.AlphaBetaPlayer(
                 search_depth=20, 
-                score_fn=game_agent.custom_score_2, 
+                score_fn=game_agent.custom_score_3, 
                 timeout=timeout)
 
             #self.player2 = sample_players.GreedyPlayer(sample_players.improved_score)
