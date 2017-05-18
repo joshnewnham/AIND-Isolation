@@ -68,8 +68,32 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    
+    """
+    Aggressive offensive behaviour; add a weight to increase importance of moves that 
+    'take-over' the opponents position  
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    # https://math.stackexchange.com/questions/139600/how-to-calculate-the-euclidean-and-manhattan-distance
+    opp_current_pos = game.get_player_location(game.get_opponent(player))    
+
+    max_distance = game.width + game.height 
+
+    score = float(own_moves - opp_moves) 
+
+    for m in own_moves:
+        score += 1.0 * (1-((m[0] - opp_current_pos[0] + m[1] - opp_current_pos[1])/max_distance))
+
+    return float(score)
 
 
 def custom_score_3(game, player):
