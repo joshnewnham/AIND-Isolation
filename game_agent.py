@@ -125,6 +125,23 @@ class IsolationPlayer:
         self.score = score_fn
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
+        """ 
+        used to cache scores for game board states to avoid recomputing, key will be the hash of the board and 
+        value a tuple (<score>, <[moves]>)
+        """
+        self.transporition_table = {} 
+
+    def get_board_state_key(self, board):
+        """ return a board state key that will be used as a key for the transporition_table 
+            when caching its score 
+        """
+        return board.hash() 
+
+    def is_game_won(self, game_state):
+        """ test if a player has won the game, called by the search methods to test whether to terminate the 
+            search 
+        """ 
+        return (game_state.is_winner(game_state.active_player) or game_state.is_winner(game_state.inactive_player)) 
 
 
 class MinimaxPlayer(IsolationPlayer):
@@ -225,7 +242,8 @@ class MinimaxPlayer(IsolationPlayer):
         if not legal_moves:
             return (-1, -1)
 
-        score, move = self.minmax_search(game, depth)
+        _, move = self.minmax_search(game, depth)
+
         return move
 
     def minmax_search(self, game_state, depth):
@@ -244,23 +262,38 @@ class MinimaxPlayer(IsolationPlayer):
         is_max = game_state.active_player == self
 
         for m in legal_moves:
-            new_game_state = game_state.forecast_move(m)            
+            next_game_state = game_state.forecast_move(m)    
+            game_state_key = self.get_board_state_key(next_game_state)        
 
-            if depth == 0 or (new_game_state.is_winner(new_game_state.active_player) or new_game_state.is_winner(new_game_state.inactive_player)):
-                score = self.score(new_game_state, self)
+            if depth == 0 or self.is_game_won(next_game_state):
+                # do we have it cached?                 
+                if  game_state_key in self.transporition_table:                    
+                    score = self.transporition_table[game_state_key][0]
+                else:                     
+                    score = self.score(next_game_state, self)
+                    # cache score and move 
+                    self.transporition_table[game_state_key] = (score, m)
             else:
-                score, move = self.minmax_search(new_game_state, depth-1)
+                if  game_state_key in self.transporition_table:
+                    score, move = self.transporition_table[game_state_key]
+                else:
+                    score, move = self.minmax_search(next_game_state, depth-1)
+                    # cache score and move                    
+                    self.transporition_table[game_state_key] = (score, move)
 
+            # first score or new best score? 
             if best_score is None or ((is_max and score > best_score) or (not is_max and score < best_score)):
                 best_score = score 
                 best_move = m 
 
                 best_moves = [m]
-
-            elif best_score is not None and best_score == score:
+            
+            # if matched the current best score then store the move, we will randomly select 
+            # which move to take if we have more than 1 
+            elif best_score == score:
                 best_moves.append(m)
 
-        return best_score, random.choice(best_moves)
+        return best_score, random.choice(best_moves)    
 
 
 class AlphaBetaPlayer(IsolationPlayer):
@@ -309,8 +342,19 @@ class AlphaBetaPlayer(IsolationPlayer):
         if not legal_moves:
             return (-1, -1)
 
-        score, move = self.alphabeta(game, self.search_depth)
-        return move
+        best_move = None 
+        best_score = float('-inf')
+
+        for current_depth in range(1, self.search_depth):
+            try:
+                score, move = self.alphabeta(game, current_depth)
+                if score > best_score:
+                    best_score = score 
+                    best_move = move 
+            except: 
+                return best_move
+        
+        return best_move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -372,7 +416,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         for m in legal_moves:
             next_game_state = game.forecast_move(m)            
 
-            if depth == 0 or (next_game_state.is_winner(next_game_state.active_player) or next_game_state.is_winner(next_game_state.inactive_player)):
+            if depth == 0 or self.is_game_won(next_game_state):
                 score = self.score(next_game_state, self)
             else:
                 score, move = self.alphabeta(next_game_state, depth-1, alpha, beta)
@@ -383,16 +427,18 @@ class AlphaBetaPlayer(IsolationPlayer):
 
                 best_moves = [m]
 
-                if is_max:
+                if is_max:                    
                     if best_score >= beta:
                         return best_score, random.choice(best_moves)
-                    alpha = max(alpha, best_score)
-                else:
+                    # update alpha for alpha-beta pruning 
+                    alpha = max(alpha, best_score)                    
+                else:                    
                     if best_score <= alpha:
                         return best_score, random.choice(best_moves)
-                    beta = min(beta, best_score)
+                    # update beta for alpha-beta pruning 
+                    beta = min(beta, best_score)                    
 
-            elif best_score is not None and best_score == score:
+            elif best_score == score:
                 best_moves.append(m)            
 
         return best_score, random.choice(best_moves)
