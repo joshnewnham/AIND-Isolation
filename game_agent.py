@@ -11,6 +11,7 @@ class SearchTimeout(Exception):
 
 
 def custom_score(game, player):
+    import math 
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
 
@@ -40,11 +41,67 @@ def custom_score(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    own_moves = len(game.get_legal_moves(player))
-    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    own_moves = game.get_legal_moves(player)
+    opp_moves = game.get_legal_moves(game.get_opponent(player))
 
-    return float(own_moves - opp_moves)
+    if len(own_moves) != 0 and len(opp_moves) == 0:
+        return float("inf")
+    elif len(own_moves) == 0 and len(opp_moves) != 0:
+        return float("-inf")
+    elif len(own_moves) == 0 and len(opp_moves) == 0:
+        return -10 
 
+    score = 0.0 
+
+    current_pos = game.get_player_location(player)
+    opp_current_pos = game.get_player_location(game.get_opponent(player))    
+
+    # higher score for moving our player closer to the centre 
+    center_pos = (game.width/2, game.height/2) 
+
+    player_center_weight = 2.0
+    weight_moves_difference_weight = 2.0 
+    opp_corner_weight = 2.0
+    opp_edge_weight = 2.0  
+
+    ## incentives moving towards the center
+    # using manhattan distance
+    # Math.abs(x1-x0) + Math.abs(y1-y0);
+    #manhattan_distance = abs(center_pos[0] - current_pos[0]) + abs(center_pos[1] - current_pos[1])
+    #max_distance = center_pos[0] + center_pos[1]
+    #score += player_center_weight * (1.0 - manhattan_distance/max_distance)
+
+    # euclidean distance         
+    euclidean_distance = math.sqrt( (center_pos[0] - current_pos[0])**2 + (center_pos[1] - current_pos[1])**2 )
+    max_distance = math.sqrt( (center_pos[0])**2 + (center_pos[1])**2 )    
+    score += player_center_weight * (1.0 - euclidean_distance/max_distance)  
+
+    ## incentives having more moves than the opponent 
+    score += weight_moves_difference_weight * float(len(own_moves))/float(len(opp_moves)) 
+
+    ## incentives pushing the player towards the edge
+    def is_on_edge(pos):
+        return pos[0] == 0 or pos[0] == game.width -1 or pos[1] == 0 or pos[1] == game.height - 1
+
+    def is_in_corner(pos):
+        corners = [(0,0), (game.width -1, 0), (game.width -1, game.height - 1), (0, game.height - 1)]
+        for corner in corners:
+            if pos[0] == corner[0] and pos[1] == corner[1]:
+                return True  
+                
+    opp_on_egde_count = 0 
+    opp_in_corner_count = 0 
+
+    for opp_move in opp_moves:
+        if is_in_corner(opp_move):
+            opp_in_corner_count += 1
+        elif is_on_edge(opp_move):
+            opp_on_egde_count += 1 
+
+    score += opp_edge_weight * opp_on_egde_count
+    score += opp_corner_weight * opp_in_corner_count 
+
+    return score 
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
