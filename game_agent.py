@@ -20,6 +20,12 @@ def custom_score(game, player):
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
 
+    An uber evaluator that captures small heuristics, first evaluating if the 
+    game is won (player or opponent) or tied otherwise assessing:
+    - Incentivising moving the player towards the center 
+    - Ratio of moves remaining between the player and opponent 
+    - Incentivising pushing the opponent towards the corner and edge 
+
     Parameters
     ----------
     game : `isolation.Board`
@@ -59,19 +65,14 @@ def custom_score(game, player):
     # higher score for moving our player closer to the centre 
     center_pos = (game.width/2, game.height/2) 
 
+    # define some weights for each 'heuristic' 
     player_center_weight = 2.0
     weight_moves_difference_weight = 2.0 
     opp_corner_weight = 2.0
     opp_edge_weight = 2.0  
 
-    ## incentives moving towards the center
-    # using manhattan distance
-    # Math.abs(x1-x0) + Math.abs(y1-y0);
-    #manhattan_distance = abs(center_pos[0] - current_pos[0]) + abs(center_pos[1] - current_pos[1])
-    #max_distance = center_pos[0] + center_pos[1]
-    #score += player_center_weight * (1.0 - manhattan_distance/max_distance)
-
-    # euclidean distance         
+    ## incentives moving towards the center    
+    # ... using euclidean distance         
     euclidean_distance = math.sqrt( (center_pos[0] - current_pos[0])**2 + (center_pos[1] - current_pos[1])**2 )
     max_distance = math.sqrt( (center_pos[0])**2 + (center_pos[1])**2 )    
     score += player_center_weight * (1.0 - euclidean_distance/max_distance)  
@@ -79,7 +80,7 @@ def custom_score(game, player):
     ## incentives having more moves than the opponent 
     score += weight_moves_difference_weight * float(len(own_moves))/float(len(opp_moves)) 
 
-    ## incentives pushing the player towards the edge
+    ## incentives pushing the opponent towards the edge
     def is_on_edge(pos):
         return pos[0] == 0 or pos[0] == game.width -1 or pos[1] == 0 or pos[1] == game.height - 1
 
@@ -110,6 +111,9 @@ def custom_score_2(game, player):
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
 
+    Aggressive offensive behaviour; add a weight to increase importance of moves that 
+    'take-over' the opponents legal position 
+
     Parameters
     ----------
     game : `isolation.Board`
@@ -125,11 +129,6 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    
-    """
-    Aggressive offensive behaviour; add a weight to increase importance of moves that 
-    'take-over' the opponents position  
-    """
 
     if game.is_loser(player):
         return float("-inf")
@@ -140,19 +139,26 @@ def custom_score_2(game, player):
     own_moves = game.get_legal_moves(player)
     opp_moves = game.get_legal_moves(game.get_opponent(player))
 
-    # https://math.stackexchange.com/questions/139600/how-to-calculate-the-euclidean-and-manhattan-distance
+    if len(own_moves) != 0 and len(opp_moves) == 0:
+        return float("inf")
+    elif len(own_moves) == 0 and len(opp_moves) != 0:
+        return float("-inf")
+    elif len(own_moves) == 0 and len(opp_moves) == 0:
+        return -10 
+
+    player_current_pos = game.get_player_location(player)
     opp_current_pos = game.get_player_location(game.get_opponent(player))    
 
     max_distance = game.width + game.height 
 
     score = float(len(own_moves) - len(opp_moves)) 
-    attack_score = 0.0 
+    
+    target_distance = 2 + 1 ## knight move 
 
-    for own_move in own_moves:
-        #score += 10.0 * (1-((own_move[0] - opp_current_pos[0] + own_move[1] - opp_current_pos[1])/max_distance))
-        attack_score += 1.0 if own_move in opp_moves else 0.0
-
-    score += attack_score * 2.0 
+    # using manhattan distance (distance from opponent)
+    distance = abs(opp_current_pos[0] - player_current_pos[0]) + abs(opp_current_pos[1] - player_current_pos[1])
+    distance_from_target = 1.0 - abs(distance-target_distance)
+    score += distance_from_target * 2.0      
 
     return float(score)
 
@@ -163,6 +169,9 @@ def custom_score_3(game, player):
 
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
+
+    Similar to the AB_Improved evaluator presented in class; this evaluator 
+    returns the squared ratio between the players remaining moves and opponents moves 
 
     Parameters
     ----------
@@ -404,6 +413,11 @@ class AlphaBetaPlayer(IsolationPlayer):
     search with alpha-beta pruning. You must finish and test this player to
     make sure it returns a good move before the search time limit expires.
     """
+
+    def __init__(self, search_depth=11, score_fn=custom_score, timeout=10.):
+        """ Override the constructor to set the search depth 
+        """
+        IsolationPlayer.__init__(self, search_depth=search_depth, score_fn=score_fn, timeout=timeout)
 
     def get_move(self, game, time_left):
         """Search for the best move from the available legal moves and return a
