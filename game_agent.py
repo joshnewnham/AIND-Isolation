@@ -48,7 +48,7 @@ def custom_score(game, player):
         return float("inf")
 
     own_moves = game.get_legal_moves(player)
-    opp_moves = game.get_legal_moves(game.get_opponent(player))
+    opp_moves = game.get_legal_moves(game.get_opponent(player)) 
 
     if len(own_moves) != 0 and len(opp_moves) == 0:
         return float("inf")
@@ -364,34 +364,33 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        best_score  = None
+        best_score = None
         best_move  = None
 
         best_moves = []
 
-        legal_moves = game_state.get_legal_moves()        
+        legal_moves = game_state.get_legal_moves()      
 
         is_max = game_state.active_player == self
 
         for m in legal_moves:
             next_game_state = game_state.forecast_move(m)    
-            game_state_key = self.get_board_state_key(next_game_state)        
+            next_game_state_key = self.get_board_state_key(next_game_state)        
 
-            if depth == 0 or self.is_game_won(next_game_state):
+            if depth == 1 or self.is_game_won(next_game_state):
                 # do we have it cached?                 
-                if  game_state_key in self.transporition_table:                    
-                    score = self.transporition_table[game_state_key][0]
+                if  next_game_state_key in self.transporition_table:                    
+                    score = self.transporition_table[next_game_state_key][0]
                 else:                     
                     score = self.score(next_game_state, self)
                     # cache score and move 
-                    self.transporition_table[game_state_key] = (score, m)
+                    #self.transporition_table[next_game_state_key] = (score, m)
             else:
-                if  game_state_key in self.transporition_table:
-                    score, move = self.transporition_table[game_state_key]
+                if  next_game_state_key in self.transporition_table:
+                    score, move = self.transporition_table[next_game_state_key]
                 else:
                     score, move = self.minmax_search(next_game_state, depth-1)
-                    # cache score and move                    
-                    self.transporition_table[game_state_key] = (score, move)
+                    self.transporition_table[next_game_state_key] = (score, move)
 
             # first score or new best score? 
             if best_score is None or ((is_max and score > best_score) or (not is_max and score < best_score)):
@@ -405,7 +404,7 @@ class MinimaxPlayer(IsolationPlayer):
             elif best_score == score:
                 best_moves.append(m)
 
-        return best_score, random.choice(best_moves)    
+        return best_score, random.choice(best_moves) if len(best_moves) > 0 else (-1,-1)    
 
 
 class AlphaBetaPlayer(IsolationPlayer):
@@ -533,7 +532,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         for m in legal_moves:
             next_game_state = game.forecast_move(m)            
 
-            if depth == 0 or self.is_game_won(next_game_state):
+            if depth == 1 or self.is_game_won(next_game_state):
                 score = self.score(next_game_state, self)
             else:
                 score, _ = self.alphabeta(next_game_state, depth-1, alpha, beta)
