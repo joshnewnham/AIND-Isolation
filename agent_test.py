@@ -34,8 +34,8 @@ class IsolationTest(unittest.TestCase):
 
         self.game = isolation.Board(self.player1, self.player2, width=width, height=height)
 
-        self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
-        self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
+        #self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
+        #self.game.apply_move((random.randint(0, self.game.width-1), random.randint(0, self.game.height-1)))
         print(self.game.to_string())
 
         # players take turns moving on the board, so player1 should be next to move

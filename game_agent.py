@@ -354,11 +354,11 @@ class MinimaxPlayer(IsolationPlayer):
         if not legal_moves:
             return (-1, -1)
 
-        _, move = self.minmax_search(game, depth)
+        _, move = self._minmax(game, depth)
 
         return move
 
-    def minmax_search(self, game_state, depth):
+    def _minmax(self, game_state, depth):
         """ min and max algorithm 
         """
         if self.time_left() < self.TIMER_THRESHOLD:
@@ -389,8 +389,11 @@ class MinimaxPlayer(IsolationPlayer):
                 if  next_game_state_key in self.transporition_table:
                     score, move = self.transporition_table[next_game_state_key]
                 else:
-                    score, move = self.minmax_search(next_game_state, depth-1)
-                    self.transporition_table[next_game_state_key] = (score, move)
+                    try:
+                        score, move = self._minmax(next_game_state, depth-1)
+                        self.transporition_table[next_game_state_key] = (score, move)
+                    except SearchTimeout:
+                        break 
 
             # first score or new best score? 
             if best_score is None or ((is_max and score > best_score) or (not is_max and score < best_score)):
@@ -449,28 +452,25 @@ class AlphaBetaPlayer(IsolationPlayer):
             (-1, -1) if there are no available legal moves.
         """
         self.time_left = time_left
-
-        if self.time_left() < self.TIMER_THRESHOLD:
-            raise SearchTimeout()
             
         legal_moves = game.get_legal_moves()
 
         if not legal_moves:
             return (-1, -1)
 
-        best_move = (-1, -1) 
-        best_score = float('-inf')
+        best_move = (-1, -1)     
 
-        for current_depth in range(1, self.search_depth):
+        current_depth = 1 
+        while True:
             try:
-                score, move = self.alphabeta(game, current_depth)
-                if score > best_score:
-                    best_score = score 
-                    best_move = move 
+                best_move = self.alphabeta(game, current_depth)                 
             except SearchTimeout: 
                 return best_move
+
+            current_depth += 1
         
-        return best_move
+        return best_move   
+
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -516,14 +516,19 @@ class AlphaBetaPlayer(IsolationPlayer):
                 pseudocode) then you must copy the timer check into the top of
                 each helper function or else your agent will timeout during
                 testing.
-        """
+        """        
+        _, move = self._alphabeta(game, depth, alpha, beta) 
+        return move 
+              
+    def _alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
         best_score  = None
         best_move  = (-1,-1)
 
-        best_moves = []
+        best_moves = [best_move]
 
         legal_moves = game.get_legal_moves()        
 
@@ -535,7 +540,7 @@ class AlphaBetaPlayer(IsolationPlayer):
             if depth == 1 or self.is_game_won(next_game_state):
                 score = self.score(next_game_state, self)
             else:
-                score, _ = self.alphabeta(next_game_state, depth-1, alpha, beta)
+                score, _ = self._alphabeta(next_game_state, depth-1, alpha, beta)
 
             if best_score is None or ((is_max and score > best_score) or (not is_max and score < best_score)):
                 best_score = score 
