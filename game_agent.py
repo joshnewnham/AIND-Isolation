@@ -3,13 +3,25 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
-
+import time
 
 class SearchTimeout(Exception):
     """Subclass base exception for code clarity. """
     pass
 
 
+def custom_score_timer(func):
+    def inner(game, player):
+        start_time = time.time()
+        result = func(game, player)
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+        player.time_logging.append(elapsed_time)
+        return result 
+    return inner
+
+@custom_score_timer
 def custom_score(game, player):
     import math 
     """Calculate the heuristic value of a game state from the point of view
@@ -104,6 +116,7 @@ def custom_score(game, player):
 
     return score 
 
+@custom_score_timer
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -162,7 +175,7 @@ def custom_score_2(game, player):
 
     return float(score)
 
-
+@custom_score_timer
 def custom_score_3(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
@@ -242,6 +255,8 @@ class IsolationPlayer:
         value a tuple (<score>, <[moves]>)
         """
         self.transporition_table = {} 
+        """ used to store the time to run the assigned evaluation function """
+        self.time_logging = []
 
     def get_board_state_key(self, board):
         """ return a board state key that will be used as a key for the transporition_table 

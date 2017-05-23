@@ -1,0 +1,106 @@
+                        *************************                         
+                             Playing Matches                              
+                        *************************                         
+
+ Match #   Opponent    AB_Improved   AB_Custom   AB_Custom_2  AB_Custom_3 
+                        Won | Lost   Won | Lost   Won | Lost   Won | Lost 
+    1       Random       9  |   1    10  |   0     9  |   1     9  |   1  
+    2       MM_Open      6  |   4     7  |   3     7  |   3     8  |   2  
+    3      MM_Center     6  |   4    10  |   0     7  |   3     7  |   3  
+    4     MM_Improved    5  |   5     9  |   1     5  |   5     4  |   6  
+    5       AB_Open      7  |   3     4  |   6     6  |   4     5  |   5  
+    6      AB_Center     5  |   5     6  |   4     5  |   5     4  |   6  
+    7     AB_Improved    3  |   7     6  |   4     2  |   8     7  |   3  
+--------------------------------------------------------------------------
+           Win Rate:      58.6%        74.3%        58.6%        62.9% 
+
+
+                        *************************                         
+                             Playing Matches                              
+                        *************************                         
+ Match #   Opponent    AB_Improved   AB_Custom   AB_Custom_2  AB_Custom_3 
+                        Won | Lost   Won | Lost   Won | Lost   Won | Lost 
+    1       Random       9  |   1     9  |   1     8  |   2    10  |   0  
+    2       MM_Open      6  |   4     8  |   2     6  |   4     7  |   3  
+    3      MM_Center     7  |   3     9  |   1     8  |   2     8  |   2  
+    4     MM_Improved    6  |   4     5  |   5     8  |   2     5  |   5  
+    5       AB_Open      4  |   6     5  |   5     4  |   6     7  |   3  
+    6      AB_Center     7  |   3     8  |   2     5  |   5     5  |   5  
+    7     AB_Improved    4  |   6     5  |   5     6  |   4     4  |   6  
+--------------------------------------------------------------------------
+           Win Rate:      61.4%        70.0%        64.3%        65.7% 
+
+
+                        *************************                         
+                             Playing Matches                              
+                        *************************                         
+
+ Match #   Opponent    AB_Improved   AB_Custom   AB_Custom_2  AB_Custom_3 
+                        Won | Lost   Won | Lost   Won | Lost   Won | Lost 
+    1       Random       9  |   1     9  |   1     8  |   2    10  |   0  
+    2       MM_Open      5  |   5     7  |   3     7  |   3     8  |   2  
+    3      MM_Center     9  |   1     8  |   2     6  |   4     9  |   1  
+    4     MM_Improved    8  |   2     9  |   1     6  |   4     5  |   5  
+    5       AB_Open      5  |   5     9  |   1     5  |   5     7  |   3  
+    6      AB_Center     5  |   5     5  |   5     5  |   5     5  |   5  
+    7     AB_Improved    5  |   5     6  |   4     5  |   5     6  |   4  
+--------------------------------------------------------------------------
+           Win Rate:      65.7%        75.7%        60.0%        71.4%  
+
+
+                        *************************                         
+                             Playing Matches                              
+                        *************************                         
+ Match #   Opponent    AB_Improved   AB_Custom   AB_Custom_2  AB_Custom_3 
+                        Won | Lost   Won | Lost   Won | Lost   Won | Lost 
+    1       Random       9  |   1     8  |   2    10  |   0     7  |   3  
+    2       MM_Open      5  |   5     6  |   4     5  |   5     6  |   4  
+    3      MM_Center     9  |   1    10  |   0     7  |   3     9  |   1  
+    4     MM_Improved    7  |   3     8  |   2     7  |   3     7  |   3  
+    5       AB_Open      4  |   6     6  |   4     4  |   6     3  |   7  
+    6      AB_Center     4  |   6     8  |   2     7  |   3     7  |   3  
+    7     AB_Improved    4  |   6     6  |   4     3  |   7     2  |   8  
+--------------------------------------------------------------------------
+           Win Rate:      60.0%        74.3%        61.4%        58.6%   
+
+
+                        *************************                         
+                             Playing Matches                              
+                        *************************                         
+
+ Match #   Opponent    AB_Improved   AB_Custom   AB_Custom_2  AB_Custom_3 
+                        Won | Lost   Won | Lost   Won | Lost   Won | Lost 
+    1       Random       7  |   3     9  |   1    10  |   0     9  |   1  
+    2       MM_Open      5  |   5     8  |   2     7  |   3     8  |   2  
+    3      MM_Center     8  |   2     9  |   1     5  |   5     9  |   1  
+    4     MM_Improved    9  |   1     5  |   5     9  |   1     9  |   1  
+    5       AB_Open      3  |   7     7  |   3     5  |   5     6  |   4  
+    6      AB_Center     4  |   6     6  |   4     7  |   3     5  |   5  
+    7     AB_Improved    7  |   3     5  |   5     4  |   6     6  |   4  
+--------------------------------------------------------------------------
+           Win Rate:      61.4%        70.0%        67.1%        74.3%    
+
+Average evaluation AB_Custom 0.042ms
+Average evaluation AB_Custom_2 0.034ms
+Average evaluation AB_Custom_3 0.032ms
+
+
+                       *************************                         
+                             Playing Matches                              
+                        *************************                         
+
+ Match #   Opponent    AB_Improved   AB_Custom   AB_Custom_2  AB_Custom_3 
+                        Won | Lost   Won | Lost   Won | Lost   Won | Lost 
+    1       Random       8  |   2     8  |   2     9  |   1     9  |   1  
+    2       MM_Open      5  |   5     8  |   2     6  |   4     7  |   3  
+    3      MM_Center     9  |   1     9  |   1     7  |   3     8  |   2  
+    4     MM_Improved    6  |   4     4  |   6     7  |   3     6  |   4  
+    5       AB_Open      5  |   5     6  |   4     6  |   4     4  |   6  
+    6      AB_Center     5  |   5     6  |   4     5  |   5     5  |   5  
+    7     AB_Improved    6  |   4     7  |   3     5  |   5     6  |   4  
+--------------------------------------------------------------------------
+           Win Rate:      62.9%        68.6%        64.3%        64.3%   
+
+Average evaluation AB_Custom 0.036ms
+Average evaluation AB_Custom_2 0.03ms
+Average evaluation AB_Custom_3 0.028ms

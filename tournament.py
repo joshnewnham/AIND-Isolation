@@ -125,6 +125,11 @@ def play_matches(cpu_agents, test_agents, num_matches):
         print(("\nYour ID search forfeited {} games while there were still " +
                "legal moves available to play.\n").format(total_forfeits))
 
+    for test_agent in test_agents:
+        if hasattr(test_agent.player, 'time_logging') and len(test_agent.player.time_logging) > 0:
+            player = test_agent.player
+            avg_time = 1000.0 * (sum(player.time_logging)/float(len(player.time_logging)))
+            print("Average evaluation {} {}ms".format(test_agent.name, round(avg_time, 3)))
 
 def main():
 
