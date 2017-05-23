@@ -3,7 +3,6 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
-import time
 
 class SearchTimeout(Exception):
     """Subclass base exception for code clarity. """
@@ -11,13 +10,14 @@ class SearchTimeout(Exception):
 
 
 def custom_score_timer(func):
+    #import time
     def inner(game, player):
-        start_time = time.time()
+        #start_time = time.time()
         result = func(game, player)
-        end_time = time.time()
+        #end_time = time.time()
 
-        elapsed_time = end_time - start_time
-        player.time_logging.append(elapsed_time)
+        #elapsed_time = end_time - start_time
+        #player.time_logging.append(elapsed_time)
         return result 
     return inner
 
@@ -378,15 +378,15 @@ class MinimaxPlayer(IsolationPlayer):
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
+        
+        is_max = game_state.active_player == self
 
-        best_score = None
-        best_move  = None
+        best_score = float("-inf") if is_max else float("inf")
+        best_move  = (-1, -1)
 
         best_moves = []
 
-        legal_moves = game_state.get_legal_moves()      
-
-        is_max = game_state.active_player == self
+        legal_moves = game_state.get_legal_moves()              
 
         for m in legal_moves:
             next_game_state = game_state.forecast_move(m)    

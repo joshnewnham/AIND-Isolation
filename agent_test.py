@@ -24,7 +24,7 @@ class IsolationTest(unittest.TestCase):
         #timeout = float("-inf")
         timeout = 10.
 
-        self.player1 = game_agent.AlphaBetaPlayer(
+        self.player1 = game_agent.MinimaxPlayer(
             search_depth=3, 
             score_fn=game_agent.custom_score, 
             timeout=timeout)
